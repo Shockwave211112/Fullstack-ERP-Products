@@ -1,0 +1,89 @@
+version: '3'
+
+networks:
+    backend:
+
+services:
+    nginx:
+        build:
+            context: backend
+            dockerfile: ./docker/nginx/Dockerfile
+        restart: always
+        container_name: products_erp_nginx
+        volumes:
+            - ./backend/:/var/www/products_erp
+            - ./backend/docker/nginx/conf.d:/etc/nginx/conf.d
+        ports:
+            - "8001:80"
+        networks:
+            - backend
+    app:
+        build:
+            context: backend
+            dockerfile: ./docker/app/Dockerfile
+        container_name: products_erp
+        restart: always
+        volumes:
+            - ./backend/:/var/www/products_erp
+            - ./backend/docker/app/php.conf:/usr/local/etc/php-fpm.d/www.conf
+        links:
+            - postgres
+            - redis
+        depends_on:
+            - nginx
+            - postgres
+            - redis
+            - php-queue
+        networks:
+            - backend
+    php-queue:
+        build:
+            context: backend
+            dockerfile: ./docker/app/Dockerfile
+        container_name: products_erp_queue
+        restart: always
+        volumes:
+            - ./backend/:/var/www/products_erp
+        links:
+            - postgres
+            - redis
+        networks:
+            - backend
+        command: [ "./docker/entrypoint.sh" ]
+#        command: php artisan queue:work
+    postgres:
+        image: postgres:15.4-alpine
+        restart: always
+        container_name: products_erp_postgres
+        environment:
+            - POSTGRES_USER=root
+            - POSTGRES_PASSWORD=admin
+            - POSTGRES_DB=products_erp
+        volumes:
+            - ./backend/docker/postgres/data:/var/lib/postgresql/data
+            - ./backend/docker/postgres/storage:/var/lib/postgresql/storage
+        networks:
+            - backend
+        ports:
+            - "5432:5432"
+    redis:
+        restart: always
+        image: redis:7.0.12-alpine
+        container_name: products_erp_redis
+        volumes:
+            - ./backend/docker/redis/data:/data
+        networks:
+            - backend
+        ports:
+            - "6379:6379"
+    frontend:
+        stdin_open: true
+        container_name: frontend
+        build:
+            context: frontend
+            dockerfile: ./nginx/Dockerfile
+        volumes:
+            - /app/node_modules
+            - ./:/var/www/products_erp/public
+        networks:
+            - backend
