@@ -49,7 +49,7 @@ services:
             - redis
         networks:
             - backend
-        command: [ "./docker/entrypoint.sh" ]
+        command: [ "./backend/docker/entrypoint.sh" ]
 #        command: php artisan queue:work
     postgres:
         image: postgres:15.4-alpine
