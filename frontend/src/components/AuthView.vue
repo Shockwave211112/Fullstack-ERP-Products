@@ -53,6 +53,13 @@ export default {
 </template>
 
 <style>
+  .error {
+    display: flex;
+    color: #ff0000;
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
   .window {
     display: flex;
     width: 100vw;

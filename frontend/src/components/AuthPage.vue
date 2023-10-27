@@ -6,15 +6,23 @@ export default {
   data() {
     return {
       emailInput: "",
-      pwdInput: ""
+      pwdInput: "",
+      errors: [],
+      errorStatus: false
     }
   },
   methods: {
     showRegisterForm() {
       this.$emit('show-register', true);
     },
+    errorMessage() {
+      if (this.pwdInput.length < 8) this.errors.push('Ваш пароль должен быть не меньше 8 символов!');
+      else this.errors.pop();
+    },
     async loginUser() {
       try {
+        this.errorStatus = false;
+        this.errors = [];
         const loginData = {
           email: this.emailInput,
           password: this.pwdInput
@@ -30,7 +38,10 @@ export default {
 
         this.$router.push('/main');
       } catch (e) {
-        alert('Ошибка соединения с сервером!' + "\n" + e.response.data.message);
+        this.errorStatus = true;
+        for (let i in e.response.data.errors) {
+          this.errors.push(e.response.data.errors[i].toString());
+        }
       }
     }
   }
@@ -44,17 +55,21 @@ export default {
   <div class="inputs">
     <p>E-mail</p>
     <input
-        @input="emailInput=$event.target.value"
+        v-model="emailInput"
         type="text"
         placeholder="Введите e-mail"/>
     <p>Пароль</p>
     <input
-        @input="pwdInput=$event.target.value"
+        v-model="pwdInput"
         type="password"
         placeholder="Введите пароль"/>
     <button class="btn string_btn" @click="showRegisterForm">Не зарегистрированы?</button>
-    <button @click="loginUser"
-            class="btn add_item">
+    <div v-if="errorStatus">
+      <div class="error" v-for="(item, index) in this.errors" :key="index">{{ item }}</div>
+    </div>
+    <button
+        @click="loginUser"
+        class="btn add_item">
       Войти
     </button>
   </div>

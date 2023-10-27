@@ -8,7 +8,9 @@ export default {
       nameInput: "",
       emailInput: "",
       pwdInput: "",
-      againPwdInput: ""
+      againPwdInput: "",
+      errorStatus: false,
+      errors: []
     }
   },
   methods:
@@ -18,26 +20,31 @@ export default {
         },
         async regUser() {
           try {
+            this.errorStatus = false;
+            this.errors = [];
             const regData = {
               name: this.nameInput,
               email: this.emailInput,
               password: this.pwdInput,
               password_confirmation: this.againPwdInput
             };
-            axios
+            await axios
                 .post("/api/auth/registration", regData)
-                .then(response => {
+                .then(async response => {
                   localStorage.setItem('token', response.data.token);
-                  localStorage.setItem('username', name);
+                  localStorage.setItem('username', this.nameInput);
+
+                  console.log(this.nameInput);
+                  await setAuthHeader();
+
+                  this.$router.push('/main');
                 });
 
-            alert('Вы успешно зарегистрировались!');
-
-            await setAuthHeader();
-
-            this.$router.push('/main');
           } catch (e) {
-            alert('Ошибка соединения с сервером!' + "\n" + e.response.data.message);
+            this.errorStatus = true;
+            for (let i in e.response.data.errors) {
+              this.errors.push(e.response.data.errors[i].toString());
+            }
           }
         }
       }
@@ -60,24 +67,27 @@ export default {
   <div class="inputs">
     <p>Ваше имя</p>
     <input
-        @input="nameInput=$event.target.value"
+        v-model="nameInput"
         type="text"
         placeholder="Введите ваше имя"/>
     <p>E-mail</p>
     <input
-        @input="emailInput=$event.target.value"
+        v-model="emailInput"
         type="text"
         placeholder="Введите адрес электронной почты"/>
     <p>Пароль</p>
     <input
-        @input="pwdInput=$event.target.value"
+        v-model="pwdInput"
         type="password"
         placeholder="Введите ваше пароль"/>
     <p>Повторите пароль</p>
     <input
-        @input="againPwdInput=$event.target.value"
+        v-model="againPwdInput"
         type="password"
         placeholder="Введите пароль ещё раз"/>
+    <div v-if="errorStatus">
+      <div class="error" v-for="(item, index) in this.errors" :key="index">{{ item }}</div>
+    </div>
     <button
         class="btn add_item"
         @click="regUser">
