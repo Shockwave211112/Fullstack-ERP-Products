@@ -1,16 +1,18 @@
-# products_erp_tz
+# products_erp
+Backend - Laravel
+Frontend - VueJS 3
 
 ### Проект упакован в docker
-Для запуска необходимо наличие docker/docker-desktop.
+Для запуска необходимо наличие docker compose/docker-desktop.
 
 ### Предварительная настройка .env в ./backend.
 Заполнить следующие поля:
-* DB_USERNAME
-* DB_PASSWORD
+* DB_USERNAME [изначально установлено значение из docker-compose.yml]
+* DB_PASSWORD [изначально установлено значение из docker-compose.yml]
 * Поля MAIL
 
 ### Запуск
-Перейти в папку с файлом docker-compose.yml в cmd, ввести команду:
+Перейти через cmd в папку с файлом docker-compose.yml, ввести команду:
 ```
 docker compose up -d
 ```
