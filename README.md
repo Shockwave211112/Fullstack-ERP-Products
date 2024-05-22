@@ -1,7 +1,6 @@
 # products_erp
-Backend - Laravel
-
-Frontend - VueJS 3
+Система управления продуктами по случайному заданию из вакансий.
+REST API Backend на Laravel, простой фронт для использования на VueJS 3.
 
 Для прав использована библиотека spatie\permissions и laravel-sanctum. 
 
