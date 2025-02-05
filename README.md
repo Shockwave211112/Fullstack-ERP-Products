@@ -24,8 +24,8 @@ REST API Backend на Laravel, простой фронт для использо
 
 ### Предварительная настройка .env в ./backend:
 Заполнить следующие поля:
-* DB_USERNAME [изначально установлено значение из docker-compose.yml]
-* DB_PASSWORD [изначально установлено значение из docker-compose.yml]
+* DB_USERNAME
+* DB_PASSWORD
 * Поля MAIL [пусты]
 
 ### Запуск
